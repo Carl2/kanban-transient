@@ -31,7 +31,30 @@
 ;;; Code:
 
 
-(defun kanban/initialize-at-first-heading ()
+(transient-define-suffix kanban-update-boards()
+  "Update all boards"
+  :description "Update boards"
+  :key "u"                  ;; What key to execute
+  (interactive )
+  (save-excursion
+    ;; (let* ((args (transient-args 'kanban-prefix))
+    ;;        (value (transient-arg-value "--option=" args))
+    ;;        )
+      (kanban-exec-fn-all-blocks #'org-dblock-update)
+      ))
+
+
+(transient-define-infix kanban-initialize-options()
+  "Either choose beginning,here or the end"
+  :description "Where to initialize the board"
+  :class 'transient-option
+  :argument "--init-place="
+  :shortarg "-i"
+  :choices '("beginning" "here" "end")
+  :init-value (lambda (obj) (oset obj value "end"))
+  :always-read t)
+
+(defun kanban-initialize-at-first-heading ()
   "initialize kanban board at the first heading"
   (save-excursion
     (goto-char (point-min))
@@ -42,7 +65,7 @@
 
 
 (transient-define-suffix kanban-init-exec()
-  "initilize the kanbanboard"
+  "initilize the kanban board"
   :key "i"
   :description "Initialize board"
   (interactive)
@@ -66,20 +89,6 @@
       (point))))
 
 
-(defun kanban-exec-fn-all-blocks (fn &optional pt name)
-  "Call fn for all the db block, if pt is not set then using point-min. if NAME is not set its kanban"
-  (let* ((start (or pt (point-min)))
-         (dblock-name (or name "kanban"))
-         (found-point (kanban-search-forward-for-board start dblock-name fn ))
-         )
-    (goto-char start)
-    (when found-point
-      (goto-char found-point)
-      (forward-line 1)
-      (kanban-search-forward-for-board fn (point) dblock-name)
-      )
-    )
-  )
 
 (defun kanban-exec-fn-all-blocks (fn &optional pt name)
   "Call FN for all the db blocks, starting from PT (or point-min). If NAME is not set, use 'kanban'."
@@ -139,7 +148,7 @@
 
 
 (transient-define-suffix kanban-row-up()
-  "move one row up "
+  "move up one row."
   :description "Prev row"
   :key "p"                  ;; What key to execute
   :transient t
@@ -147,7 +156,7 @@
   (forward-line 1)
   )
 (transient-define-suffix kanban-row-down()
-  "move one row up "
+  "move down one row."
   :description "Next row"
   :key "n"                  ;; What key to execute
   :transient t
