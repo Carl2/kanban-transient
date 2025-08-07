@@ -256,9 +256,12 @@ Now this should be implemented in =kanban-find-boards=
 
 #+NAME: TEST
 #+BEGIN: kanban :mirrored t
-| DONE | TODO |
-|------+------|
-
+| DONE                   | TODO                                |
+|------------------------+-------------------------------------|
+| [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]] |                                     |
+|                        | [[file:README.org::*add the heading to choices.][add the heading to choices.]]         |
+|                        | [[file:README.org::*org element at point][org element at point]]                |
+|                        | [[file:README.org::*Making a inifix with board names...][Making a inifix with board names...]] |
 #+END:
 
 
@@ -272,6 +275,75 @@ I want to choose which I want to jump to?
 At this  point we can use =org-element-at-point= which returns the properties (and name)
 
 
+** DONE Jump to board (suffix)
+CLOSED: [2025-08-07 Thu 21:38]
+Should be fairly easy to implement a interactive jump to a
+position now..
+
+So lets say we create a suffix, with choices, these choices are
+obviously gotten from =kanban-find-boards= where we get a list of positions?
+
+Maybe its I can use =competing-read=
+lets try it out. =kanban-find-boards= returns a list of position.
+This list needs first to be transformed to strings...
+
+
+
+
+#+begin_src emacs-lisp :lexical
+  (defun kanban-jump-to-position ()
+  "Interactively jump to a kanban board position."
+  (interactive)
+  (let* ((positions (kanban-find-boards))            ; e.g. a list of symbols or numbers
+         (candidates (mapcar #'prin1-to-string positions))
+         (choice (completing-read "Jump to board: " candidates)))
+    (goto-char (string-to-number choice))
+    ))
+#+end_src
+
+This is all good and cozy, the only problem is that it looks awful.
+At least i can do is use "board 1" "board 2" ..
+For that we need a plist...
+
+Lets first check out how this can be done
+#+begin_src emacs-lisp :lexical
+  (defun kanban-make-alist (board-number pos)
+    "Create alist with number and position"
+    (let ((linenr (line-number-at-pos pos)))
+      (cons (format "Board #%d (line %d)" board-number linenr) pos)
+    ))
+
+  (defun kanban-create-seq (candidates)
+    "create a sequence of all candidates"
+    (number-sequence 1 (length candidates))
+    )
+
+
+  (defun kanban-jump-to-board ()
+    "docstring"
+    (interactive)
+    (let* ((positions (kanban-find-boards)) ;Here we get all the position
+           (candidates (cl-mapcar #'kanban-make-alist (kanban-create-seq positions) positions))
+
+           (choice (completing-read "Jump to board" (mapcar #'car candidates)))
+           (pos (cdr (assoc choice candidates)))
+           )
+      (message "Pos %d" pos)
+      (goto-char pos)
+      ))
+
+(org-get-heading)
+#+end_src
+
+#+RESULTS:
+: TODO Jump to board (suffix)
+
+one slight change to this is to to have the org heading..
+That would be pretty cool.. That has to wait..
+
+
+*** TODO add the heading to choices.
+
 ** TODO org element at point
 As described above we could get the element at point and retrive some useful information
 I would also like to get the line number for a point.
@@ -281,17 +353,14 @@ So instead of reffering to name (if it dont exists) i can refer to a line number
 
 
 
-** TODO Jump to board (suffix)
-Should be fairly easy to implement a interactive jump to a
-position now..
-
 ** TODO Making a inifix with board names...
 
 
 #+BEGIN: kanban :mirrored t
-| DONE | TODO                               |
-|------+------------------------------------|
-|      | [[file:README.org::*org element at point][org element at point]]               |
-|      | [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]]             |
-|      | [[file:README.org::*Making a inifx with board names...][Making a inifx with board names...]] |
+| DONE                   | TODO                                |
+|------------------------+-------------------------------------|
+| [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]] |                                     |
+|                        | [[file:README.org::*add the heading to choices.][add the heading to choices.]]         |
+|                        | [[file:README.org::*org element at point][org element at point]]                |
+|                        | [[file:README.org::*Making a inifix with board names...][Making a inifix with board names...]] |
 #+END:

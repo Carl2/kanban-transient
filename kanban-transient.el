@@ -126,6 +126,43 @@
     ))))
 
 
+(defun kanban-jump-to-position ()
+  "Interactively jump to a kanban board position."
+  (interactive)
+  (let* ((positions (kanban-find-boards))            ; e.g. a list of symbols or numbers
+         (candidates (mapcar #'prin1-to-string positions))
+         (choice (completing-read "Jump to board: " candidates)))
+    (goto-char (string-to-number choice))
+    ))
+
+
+(defun kanban-make-choice-list (board-number pos)
+  "Create alist with number and position"
+  (let ((linenr (line-number-at-pos pos)))
+    (cons (format "Board #%d (line %d)" board-number linenr) pos)
+    ))
+
+(defun kanban-create-seq (candidates)
+  "create a sequence of all candidates"
+  (number-sequence 1 (length candidates))
+  )
+
+(transient-define-suffix kanban-jump-to-board()
+  "Jumps to specified board"
+  :description "Jump to a board"
+  :key "j"
+  :transient t
+  (interactive)
+  (let* ((positions (kanban-find-boards)) ;Here we get all the position
+         (candidates (cl-mapcar #'kanban-make-choice-list (kanban-create-seq positions) positions))
+         (choice (completing-read "Jump to board" (mapcar #'car candidates)))
+         (pos (cdr (assoc choice candidates)))
+         )
+    (message "Pos %d" pos)
+    (goto-char pos)
+    ))
+
+
 (transient-define-suffix kanban-field-right()
   "Moving a field to the right"
   :description "→"
@@ -190,19 +227,22 @@
   ["Kanban"
    ["Operations"
     (kanban-init-exec)
-    (kanban-update-boards)]
-   [(kanban-row-up)
-    (kanban-row-down)
-    ]
+    (kanban-update-boards)
+    (kanban-jump-to-board)]
+   ["Subtree"
+    (kanban-row-up)
+    (kanban-row-down)]
    ["field" :class transient-column
     (kanban-field-left)]
    ["table" (kanban-field-up) (kanban-field-down)]
    ["edit" (kanban-field-right) ]
    ]
   ["Options"
-   (kanban-initialize-options)
-   ]
-  )
+   [(kanban-initialize-options)]
+   [("q" "Quit" transient-quit-one :face '(:foreground "red"))]
+   ])
+
+
 (provide 'kanban-transient)
 
 (defun test-prepare ()
