@@ -104,6 +104,26 @@
       0)
     ))
 
+;; This can be further abstracted by using fn as argument instead of (point)
+;; Later!!
+(defun store-points-fn (list-of-points)
+  "Returns another function that stores points"
+  (lambda ()
+    (setcdr list-of-points (append (cdr list-of-points) (list (point))))
+    ))
+
+(defun kanban-find-boards (&optional pt dblock-name)
+  "Find all kanban boards and return their location."
+  (save-excursion
+    (let* ((my-list (list nil))
+           (name (or dblock-name "kanban"))
+           (store-fn (store-points-fn my-list))
+           (start (or pt (point-min)))
+         )
+    (progn
+      (kanban-exec-fn-all-blocks store-fn start)
+      (cdr my-list)
+    ))))
 
 
 (transient-define-suffix kanban-field-right()
@@ -133,7 +153,7 @@
   :transient t
   :format " %d"
   (interactive)
-  (org-kanban//move-subtree 'up)
+  (forward-line -1)
   )
 
 (transient-define-suffix kanban-field-down()
@@ -143,25 +163,25 @@
   :format " %d"
   :transient t
   (interactive)
-  (org-kanban//move-subtree 'down)
+  (forward-line 1)
   )
 
 
 (transient-define-suffix kanban-row-up()
   "move up one row."
-  :description "Prev row"
-  :key "p"                  ;; What key to execute
+  :description "Subtree up"
+  :key "w"                  ;; What key to execute
   :transient t
   (interactive)
-  (forward-line 1)
+  (org-kanban//move-subtree 'up)
   )
 (transient-define-suffix kanban-row-down()
   "move down one row."
-  :description "Next row"
-  :key "n"                  ;; What key to execute
+  :description "Subtree dwn"
+  :key "s"                  ;; What key to execute
   :transient t
   (interactive)
-  (forward-line -1)
+  (org-kanban//move-subtree 'down)
   )
 
 
@@ -184,5 +204,10 @@
    ]
   )
 (provide 'kanban-transient)
+
+(defun test-prepare ()
+  "docstring"
+  (interactive )
+  )
 
 ;;; kanban-transient.el ends here

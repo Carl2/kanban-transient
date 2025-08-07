@@ -1,0 +1,297 @@
+* Updating parameters
+
+org-prepare-dblock function.
+#+begin_src emacs-lisp
+  (:name "kanban" :mirrored t :indentation-column 0 :content #("| CANCEL | DONE | Test | Working | Analysis              | Backlog                   |
+|--------+------+------+---------+-----------------------+---------------------------|
+|        |      |      |         |                       | [[file:kanban_test.org::*Research][Research]]                  |
+|        |      |      |         |                       | [[file:kanban_test.org::*Chapter 3: Methodology][Chapter 3: Methodology]]    |
+|        |      |      |         |                       | [[file:kanban_test.org::*Chapter 1: Introduction][Chapter 1: Introduction]]   |
+|        |      |      |         | [[file:kanban_test.org::*Chapter 2: Background][Chapter 2: Background]] |                           |
+|        |      |      |         | [[file:kanban_test.org::*Chapter 4: Results][Chapter 4: Results]]    |                           |
+|        |      |      |         | [[file:kanban_test.org::*Finalize Manuscript][Finalize Manuscript]]   |                           |
+|        |      |      |         |                       | [[file:kanban_test.org::*Chapter 5: Conclusion][Chapter 5: Conclusion]]     |
+|        |      |      |         |                       | [[file:kanban_test.org::*Publish][Publish]]                   |
+|        |      |      |         |                       | [[file:kanban_test.org::*Submit manuscript][Submit manuscript]]         |
+|        |      |      |         |                       | [[file:kanban_test.org::*Withdraw chapter proposal][Withdraw chapter proposal]] |
+" 0 86 (face org-table fontified t) 86 87 (face org-table-row fontified t) 87 173 (face org-table fontified t) 173 174 (face org-table-row fontified t) 174 233 (face org-table fontified t) 233 267 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Research") help-echo "LINK: file:kanban_test.org::*Research" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 267 268 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Research") help-echo "LINK: file:kanban_test.org::*Research" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 268 275 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Research") help-echo "LINK: file:kanban_test.org::*Research" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 275 276 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Research") help-echo "LINK: file:kanban_test.org::*Research" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 276 277 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Research") help-echo "LINK: file:kanban_test.org::*Research" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 277 278 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Research") help-echo "LINK: file:kanban_test.org::*Research" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 278 297 (face org-table fontified t) 297 298 (face org-table-row fontified t) 298 357 (face org-table fontified t) 357 405 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 3: Methodology") help-echo "LINK: file:kanban_test.org::*Chapter 3: Methodology" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 405 406 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 3: Methodology") help-echo "LINK: file:kanban_test.org::*Chapter 3: Methodology" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 406 427 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 3: Methodology") help-echo "LINK: file:kanban_test.org::*Chapter 3: Methodology" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 427 428 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 3: Methodology") help-echo "LINK: file:kanban_test.org::*Chapter 3: Methodology" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 428 429 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 3: Methodology") help-echo "LINK: file:kanban_test.org::*Chapter 3: Methodology" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 429 430 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 3: Methodology") help-echo "LINK: file:kanban_test.org::*Chapter 3: Methodology" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 430 435 (face org-table fontified t) 435 436 (face org-table-row fontified t) 436 495 (face org-table fontified t) 495 544 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 1: Introduction") help-echo "LINK: file:kanban_test.org::*Chapter 1: Introduction" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 544 545 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 1: Introduction") help-echo "LINK: file:kanban_test.org::*Chapter 1: Introduction" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 545 567 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 1: Introduction") help-echo "LINK: file:kanban_test.org::*Chapter 1: Introduction" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 567 568 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 1: Introduction") help-echo "LINK: file:kanban_test.org::*Chapter 1: Introduction" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 568 569 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 1: Introduction") help-echo "LINK: file:kanban_test.org::*Chapter 1: Introduction" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 569 570 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 1: Introduction") help-echo "LINK: file:kanban_test.org::*Chapter 1: Introduction" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 570 574 (face org-table fontified t) 574 575 (face org-table-row fontified t) 575 610 (face org-table fontified t) 610 657 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 2: Background") help-echo "LINK: file:kanban_test.org::*Chapter 2: Background" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 657 658 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 2: Background") help-echo "LINK: file:kanban_test.org::*Chapter 2: Background" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 658 678 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 2: Background") help-echo "LINK: file:kanban_test.org::*Chapter 2: Background" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 678 679 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 2: Background") help-echo "LINK: file:kanban_test.org::*Chapter 2: Background" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 679 680 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 2: Background") help-echo "LINK: file:kanban_test.org::*Chapter 2: Background" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 680 681 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 2: Background") help-echo "LINK: file:kanban_test.org::*Chapter 2: Background" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 681 711 (face org-table fontified t) 711 712 (face org-table-row fontified t) 712 747 (face org-table fontified t) 747 791 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 4: Results") help-echo "LINK: file:kanban_test.org::*Chapter 4: Results" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 791 792 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 4: Results") help-echo "LINK: file:kanban_test.org::*Chapter 4: Results" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 792 809 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 4: Results") help-echo "LINK: file:kanban_test.org::*Chapter 4: Results" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 809 810 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 4: Results") help-echo "LINK: file:kanban_test.org::*Chapter 4: Results" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 810 811 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 4: Results") help-echo "LINK: file:kanban_test.org::*Chapter 4: Results" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 811 812 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 4: Results") help-echo "LINK: file:kanban_test.org::*Chapter 4: Results" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 812 845 (face org-table fontified t) 845 846 (face org-table-row fontified t) 846 881 (face org-table fontified t) 881 926 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Finalize Manuscript") help-echo "LINK: file:kanban_test.org::*Finalize Manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 926 927 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Finalize Manuscript") help-echo "LINK: file:kanban_test.org::*Finalize Manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 927 945 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Finalize Manuscript") help-echo "LINK: file:kanban_test.org::*Finalize Manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 945 946 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Finalize Manuscript") help-echo "LINK: file:kanban_test.org::*Finalize Manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 946 947 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Finalize Manuscript") help-echo "LINK: file:kanban_test.org::*Finalize Manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 947 948 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Finalize Manuscript") help-echo "LINK: file:kanban_test.org::*Finalize Manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 948 980 (face org-table fontified t) 980 981 (face org-table-row fontified t) 981 1040 (face org-table fontified t) 1040 1087 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 5: Conclusion") help-echo "LINK: file:kanban_test.org::*Chapter 5: Conclusion" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1087 1088 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 5: Conclusion") help-echo "LINK: file:kanban_test.org::*Chapter 5: Conclusion" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 1088 1108 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 5: Conclusion") help-echo "LINK: file:kanban_test.org::*Chapter 5: Conclusion" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 1108 1109 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 5: Conclusion") help-echo "LINK: file:kanban_test.org::*Chapter 5: Conclusion" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 1109 1110 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 5: Conclusion") help-echo "LINK: file:kanban_test.org::*Chapter 5: Conclusion" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1110 1111 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Chapter 5: Conclusion") help-echo "LINK: file:kanban_test.org::*Chapter 5: Conclusion" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1111 1117 (face org-table fontified t) 1117 1118 (face org-table-row fontified t) 1118 1162 (face org-table fontified t) 1162 1177 (face org-table fontified t) 1177 1210 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Publish") help-echo "LINK: file:kanban_test.org::*Publish" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1210 1211 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Publish") help-echo "LINK: file:kanban_test.org::*Publish" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 1211 1217 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Publish") help-echo "LINK: file:kanban_test.org::*Publish" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 1217 1218 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Publish") help-echo "LINK: file:kanban_test.org::*Publish" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 1218 1219 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Publish") help-echo "LINK: file:kanban_test.org::*Publish" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1219 1220 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Publish") help-echo "LINK: file:kanban_test.org::*Publish" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1220 1240 (face org-table fontified t) 1240 1241 (face org-table-row fontified t) 1241 1300 (face org-table fontified t) 1300 1343 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Submit manuscript") help-echo "LINK: file:kanban_test.org::*Submit manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1343 1344 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Submit manuscript") help-echo "LINK: file:kanban_test.org::*Submit manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 1344 1360 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Submit manuscript") help-echo "LINK: file:kanban_test.org::*Submit manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 1360 1361 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Submit manuscript") help-echo "LINK: file:kanban_test.org::*Submit manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 1361 1362 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Submit manuscript") help-echo "LINK: file:kanban_test.org::*Submit manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1362 1363 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Submit manuscript") help-echo "LINK: file:kanban_test.org::*Submit manuscript" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1363 1373 (face org-table fontified t) 1373 1374 (face org-table-row fontified t) 1374 1433 (face org-table fontified t) 1433 1484 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Withdraw chapter proposal") help-echo "LINK: file:kanban_test.org::*Withdraw chapter proposal" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1484 1485 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Withdraw chapter proposal") help-echo "LINK: file:kanban_test.org::*Withdraw chapter proposal" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 1485 1509 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Withdraw chapter proposal") help-echo "LINK: file:kanban_test.org::*Withdraw chapter proposal" keymap (keymap ... ... ... ... ...) mouse-face highlight face (org-link org-table) ...) 1509 1510 (rear-nonsticky (mouse-face highlight keymap invisible intangible help-echo org-linked-text htmlize-link) font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Withdraw chapter proposal") help-echo "LINK: file:kanban_test.org::*Withdraw chapter proposal" keymap (keymap ... ... ... ... ...) mouse-face highlight ...) 1510 1511 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Withdraw chapter proposal") help-echo "LINK: file:kanban_test.org::*Withdraw chapter proposal" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1511 1512 (font-lock-multiline t htmlize-link (:uri "file:kanban_test.org::*Withdraw chapter proposal") help-echo "LINK: file:kanban_test.org::*Withdraw chapter proposal" keymap (keymap ... ... ... ... ...) mouse-face highlight invisible org-link ...) 1512 1514 (face org-table fontified t) 1514 1515 (face org-table-row fontified t)))
+#+end_src
+
+
+
+Your data is a plist (property list). To retrieve values by key from it, use the =plist-get= function in Emacs Lisp.
+
+Example assuming your data is bound to a variable =params=:
+
+#+begin_src emacs-lisp
+(plist-get params :name)           ; => "kanban"
+(plist-get params :mirrored)       ; => t
+(plist-get params :indentation-column) ; => 0
+(plist-get params :content)        ; => the table content string with text properties
+#+end_src
+
+If you have the entire plist inline, you can assign it first:
+
+#+begin_src emacs-lisp
+(setq params '(:name "kanban" :mirrored t :indentation-column 0 :content "..."))
+#+end_src
+
+Then use =plist-get= to fetch the values by their keys as shown above.
+
+So the parameters are all the content including the parameters are there.
+
+
+* Check out
+
+* Feature configure
+:PROPERTIES:
+:ID:       a720c84b-4780-46e5-b426-1aa8526d805d
+:END:
+So i want an option to be able to choose a specfic kanban board.
+The search for the kanban board and get back the heading
+
+$f::list[kboard]$
+
+
+
+To store metadata about positions and headings in an org document, both property lists (plists) and structs can work in Emacs Lisp. Here are considerations:
+
+- *Plists:* Flexible, dynamic keys, easy for quick ad-hoc storage.
+- *Structs:* Define fixed fields, better for structured data and type safety.
+
+For your use case (storing position, heading, etc. found after an org-dblock), a plist usually suffices and is simpler:
+
+#+begin_src elisp
+;; Example plist for a kanban board entry
+(setq kboard-entry '(:position 123 :heading "Feature configure"))
+#+end_src
+
+You can collect these in a list:
+
+#+begin_src elisp
+(setq kboard-entries (list kboard-entry))
+#+end_src
+
+When you search your org buffer, for example with =org-element= API, you can grab positions and headings, then store them in plists like above.
+
+If later you want to enforce structure, define a =cl-defstruct= for a board item:
+
+#+begin_src elisp
+(cl-defstruct kboard-entry
+  position
+  heading)
+#+end_src
+
+But starting with plists is simpler and idiomatic for Emacs Lisp.
+
+---
+
+*Example to get heading at point:*
+
+#+begin_src elisp
+(defun my/org-get-heading-at-pos (pos)
+  (save-excursion
+    (goto-char pos)
+    (org-get-heading t t t t)))
+#+end_src
+
+Then store =(list :position pos :heading (my/org-get-heading-at-pos pos))= per found block.
+
+---
+
+If you want I can help write code to parse the buffer for those dblocks and store the info.
+
+
+
+In Emacs Lisp, a plist is a simple key-value list like =(:key1 val1 :key2 val2)=. To get a property, use =plist-get=:
+#+begin_src elisp
+(plist-get kboard :heading)  ;; retrieves the value for :heading from kboard plist
+#+end_src
+
+Yes, conceptually a plist works like a hash map with keys and values, but keys are typically keywords (symbols starting with =:=) and you must search sequentially, so it’s less efficient than a hash table but very idiomatic and convenient for most uses.
+
+For your kanban board, you might store entries like:
+#+begin_src elisp
+(setq kboard '(:position 123 :heading "Feature configure"))
+(plist-get kboard :heading)  ;; => "Feature configure"
+#+end_src
+
+If you want to collect many entries, use a list of plists:
+#+begin_src elisp
+(setq kboards (list kboard ...))
+#+end_src
+
+You can search your org buffer for kanban headings and store them in such plists. If you want, I can help write code to do that.
+
+
+
+** Finding all kanban boards
+
+The idea is to search in the document for all the kanban-boards
+
+
+this can be done using  =(kanban-search-forward-for-board)= .
+
+1. sending in (point-min) we get to the start , then the fn will return first point.
+   2. Using a lambda can we make use of closure?
+      For example if we capture a plist and add to it, let me try.
+
+#+begin_src emacs-lisp :transient t
+  (defun capture-list-test (ref-list)
+    "docstring"
+    (lambda (val)
+      (nconc ref-list (list val))
+      ))
+
+  (defun call-cap-for-list ()
+    "docstring"
+    (interactive)
+    (let* (
+           (my-list (list "a" "b"))
+           (my-fn (capture-list-test my-list))
+           )
+      (progn
+        (mapcar my-fn '("a" "b" "c"))
+        my-list
+        )))
+#+end_src
+
+#+RESULTS:
+: call-cap-for-list
+
+
+Good experiment!
+However, in your code, the lambda closes over =ref-list=, but =nconc= does *not* alter =my-list= in =call-cap-for-list= as you might expect.
+
+That’s because in Emacs Lisp (like most Lisps), =nconc= mutates /the last cons cell/ of its first argument (the list’s cdr), but since you passed =(list "a" "b")=, =my-list= is a fresh list each function call, and the closure does not update it in place for the outside scope. The closure just keeps its own reference.
+
+*To actually capture changes, you should use a single mutable /data structure/, e.g. a list placed in a variable by reference. Or use =list= cell tricks.* For example:
+
+#+begin_src elisp :lexical t
+  (defun capture-list-test (ref-cell)
+    (lambda (val)
+      (setcdr ref-cell (append (cdr ref-cell) (list val)))))
+
+  (defun call-cap-for-list ()
+    (interactive)
+    (let* ((my-list (list "d")) ; dummy head cell
+           (my-fn (capture-list-test my-list)))
+      (mapcar my-fn '("a" "b" "c"))
+      (cdr my-list)
+      ))
+  ;; call-cap-for-list => ("a" "b" "c")
+#+end_src
+
+#+RESULTS:
+: call-cap-for-list
+
+In essence , i will create a list.
+With points , where i can find the different kanban board in a file.
+
+I have a function =kanban-search-forward-for-board=
+which needs a pt and name and a fn.
+If that function is
+
+#+begin_src emacs-lisp :lexical t
+  (defun store-points-fn (list-of-points)
+    "Returns another function that stores points"
+    (lambda ()
+      (setcdr list-of-points (append (cdr list-of-points) (list (point))))
+      ))
+
+
+
+  (defun kanban-search-forward-for-board (pt name fn)
+    "search forward for the dynamic board "
+    (let* ((board-regexp (format "^#\\+BEGIN: %s" name)))
+      (goto-char pt)
+      (when (re-search-forward board-regexp nil t)
+        (goto-char (match-beginning 0))
+        (funcall fn)
+        (point))))
+#+end_src
+
+#+RESULTS:
+: kanban-search-forward-for-board
+
+Now using =kanban-search-forward-for-board=
+
+#+begin_src emacs-lisp :lexical t
+  (progn
+    (let* ((my-list (list nil))
+           (store-fn (store-points-fn my-list))
+           )
+      (kanban-search-forward-for-board (point-min) "kanban" store-fn)
+      my-list
+      )
+    )
+#+end_src
+
+#+RESULTS:
+| nil | 25511 |
+
+THis is exactly what i was hoping for.  Now to further extend this, we
+will need to loop through the available places, fortunatly we ave a
+=kanban-exec-fn-all-boards=, if we use this together with our newly
+created function, we should have a list of all
+
+#+begin_src emacs-lisp :lexical
+  (let* ((my-list (list nil))
+         (store-fn (store-points-fn my-list))
+         )
+    (progn
+      (kanban-exec-fn-all-blocks store-fn)
+      (cdr my-list)
+    ))
+
+#+end_src
+
+#+RESULTS:
+| 25928 | 26493 |
+ YES! That work perfectly
+Now this should be implemented in =kanban-find-boards=
+
+(kanban-find-boards)
+
+
+#+NAME: TEST
+#+BEGIN: kanban :mirrored t
+| DONE | TODO |
+|------+------|
+
+#+END:
+
+
+
+
+
+So what do we want to do with this? Well the idea is to
+be able to refer to one (if there are several). Right now i only have their position.
+But maybe they have a name? or do i want to add a name?
+I want to choose which I want to jump to?
+At this  point we can use =org-element-at-point= which returns the properties (and name)
+
+
+** TODO org element at point
+As described above we could get the element at point and retrive some useful information
+I would also like to get the line number for a point.
+=(line-number-at-pos 25928)= i.e
+So instead of reffering to name (if it dont exists) i can refer to a line number.
+
+
+
+
+** TODO Jump to board (suffix)
+Should be fairly easy to implement a interactive jump to a
+position now..
+
+** TODO Making a inifix with board names...
+
+
+#+BEGIN: kanban :mirrored t
+| DONE | TODO                               |
+|------+------------------------------------|
+|      | [[file:README.org::*org element at point][org element at point]]               |
+|      | [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]]             |
+|      | [[file:README.org::*Making a inifx with board names...][Making a inifx with board names...]] |
+#+END:
