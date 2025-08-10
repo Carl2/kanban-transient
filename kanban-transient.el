@@ -30,6 +30,9 @@
 
 ;;; Code:
 
+(defvar kanban--selected-boards nil
+  "List of selected board positions for batch operations.")
+
 
 (transient-define-suffix kanban-update-boards()
   "Update all boards"
@@ -228,7 +231,8 @@
    ["Operations"
     (kanban-init-exec)
     (kanban-update-boards)
-    (kanban-jump-to-board)]
+    (kanban-jump-to-board)
+    ("p" "Properties" kanban-properties)]
    ["Subtree"
     (kanban-row-up)
     (kanban-row-down)]
@@ -241,6 +245,183 @@
    [(kanban-initialize-options)]
    [("q" "Quit" transient-quit-one :face '(:foreground "red"))]
    ])
+
+
+
+
+;; This is the indidual kanban boards
+;; Property prefix
+(defun kanban--get-board-info (pos)
+  "Get board info at position POS."
+  (save-excursion
+    (goto-char pos)
+    (when (looking-at "#\\+BEGIN: kanban\\(.*\\)$")
+      (let* ((params-str (match-string 1))
+             (line (line-number-at-pos))
+             (mirrored (if (string-match ":mirrored\\s-+\\(t\\|nil\\)" params-str)
+                          (match-string 1 params-str)
+                        "nil")))
+        (list :pos pos
+              :line line
+              :params params-str
+              :mirrored mirrored)))))
+
+
+(transient-define-suffix kanban-toggle-board-selection ()
+  "Toggle selection of boards for batch operations."
+  :description "Select boards"
+  :key "m"
+  :transient t
+  (interactive)
+  (let* ((all-boards (mapcar #'kanban--get-board-info (kanban-find-boards)))
+         (candidates (mapcar (lambda (board)
+                              (let* ((pos (plist-get board :pos))
+                                     (checked (member pos kanban--selected-boards)))
+                                (cons (kanban--format-board-candidate board checked)
+                                      pos)))
+                            all-boards))
+         (choice (completing-read "Toggle board (TAB to complete): "
+                                 (mapcar #'car candidates)
+                                 nil t))
+         (pos (cdr (assoc choice candidates))))
+    (if (member pos kanban--selected-boards)
+        (setq kanban--selected-boards (delete pos kanban--selected-boards))
+      (push pos kanban--selected-boards))
+    (message "Selected %d board(s)" (length kanban--selected-boards))))
+
+(defun kanban--format-board-candidate (board-info checked)
+  "Format a board candidate for selection."
+  (let ((check (if checked "☑" "☐")))
+    (format "%s Board at line %d (mirrored: %s)"
+            check
+            (plist-get board-info :line)
+            (plist-get board-info :mirrored))))
+
+
+(transient-define-suffix kanban-select-all-boards ()
+  "Select all boards."
+  :description "Select all"
+  :key "M"
+  (interactive)
+  (setq kanban--selected-boards (kanban-find-boards))
+  (message "Selected all %d board(s)" (length kanban--selected-boards)))
+
+(transient-define-suffix kanban-clear-selection ()
+  "Clear board selection."
+  :description "Clear selection"
+  :key "C"
+  (interactive)
+  (setq kanban--selected-boards nil)
+  (message "Cleared board selection"))
+
+
+(transient-define-suffix kanban-apply-mirror ()
+  "Apply mirrored setting to selected boards."
+  :description "Apply mirrored"
+  :key "a"
+  (interactive)
+  (let* ((args (transient-args 'kanban-properties))
+         (mirrored-value (transient-arg-value "--mirrored=" args))
+         (prop-regex ":mirrored\\s-+\\(?:t\\|nil\\)")
+         (boards (or kanban--selected-boards
+                    (when (y-or-n-p "No boards selected. Apply to current board?")
+                      (list (save-excursion
+                             (unless (looking-at "#\\+BEGIN: kanban")
+                               (re-search-backward "#\\+BEGIN: kanban" nil t))
+                             (point)))))))
+    (if boards
+        (progn
+          (dolist (pos boards)
+            (kanban--update-board-property pos "mirrored" (or mirrored-value "nil") prop-regex))
+          (message "Updated mirrored property for %d board(s)" (length boards))
+          ;; Update the boards after changing properties
+          (kanban-exec-fn-all-blocks #'org-dblock-update))
+      (message "No boards to update"))))
+
+
+
+(transient-define-suffix kanban-show-selection ()
+  "Show currently selected boards."
+  :description "Show selection"
+  :key "?"
+  :transient t
+  (interactive)
+  (if kanban--selected-boards
+      (let ((board-infos (mapcar #'kanban--get-board-info kanban--selected-boards)))
+        (message "Selected boards: %s"
+                 (mapconcat (lambda (b)
+                             (format "Line %d" (plist-get b :line)))
+                           board-infos ", ")))
+    (message "No boards selected")))
+
+(defun kanban--update-board-property (pos property value prop-regex)
+  "Update PROPERTY with VALUE for board at POS."
+  (save-excursion
+    (goto-char pos)
+    (when (looking-at "#\\+BEGIN: kanban\\(.*\\)$")
+      (let* ((params (match-string 1))
+             (new-prop (format ":%s %s" property value)))
+        (if (string-match prop-regex params)
+            ;; Replace existing property
+            (let ((new-params (replace-match new-prop nil nil params)))
+              (beginning-of-line)
+              (kill-line)
+              (insert "\n")
+              (previous-line)
+              (insert (format "#+BEGIN: kanban%s" new-params)))
+          ;; Add new property
+          (beginning-of-line)
+          (kill-line)
+          (insert "\n")
+          (previous-line)
+          (insert (format "#+BEGIN: kanban%s %s" params new-prop)))))))
+
+;; (defun kanban--update-board-property (pos property value)
+;;   "update PROPERTY with VALUE for board at POS."
+
+;;   )
+
+(transient-define-infix kanban-mirror-option ()
+  "Set mirrored property value."
+  :description "Mirrored"
+  :class 'transient-option
+  :key "-p"
+  :argument "--mirrored="
+  :choices '("t" "nil")
+  :init-value (lambda (obj) (oset obj value "nil")))
+
+(transient-define-infix kanban-match-option ()
+  "Set PROPERTY for a kanban board to MATCH a string
+"
+  :description "Match"
+  :shortarg "-m"
+  :argument "--match="
+  :always-read t
+  :class 'transient-option)
+
+
+(transient-define-prefix kanban-properties ()
+  "Manage kanban board properties."
+  [:description
+   (lambda ()
+     (format "Board Properties (%d selected)"
+             (length kanban--selected-boards)))
+   ["Selection"
+    :class transient-row
+    (kanban-toggle-board-selection)
+    (kanban-select-all-boards)
+    (kanban-clear-selection)
+    (kanban-show-selection)]
+   ["Properties"
+    (kanban-mirror-option)
+    (kanban-match-option)]
+   ["Actions"
+    :class transient-row
+    (kanban-apply-mirror)
+    ("u" "Update boards" kanban-update-boards)
+    ("q" "Back" transient-quit-one)]])
+
+
 
 
 (provide 'kanban-transient)

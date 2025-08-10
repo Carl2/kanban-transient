@@ -255,12 +255,13 @@ Now this should be implemented in =kanban-find-boards=
 
 
 #+NAME: TEST
-#+BEGIN: kanban :mirrored t
+#+BEGIN: kanban :mirrored nil
 | DONE                   | TODO                                |
 |------------------------+-------------------------------------|
 | [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]] |                                     |
 |                        | [[file:README.org::*add the heading to choices.][add the heading to choices.]]         |
 |                        | [[file:README.org::*org element at point][org element at point]]                |
+|                        | [[file:README.org::*Adding match property][Adding match property]]               |
 |                        | [[file:README.org::*Making a inifix with board names...][Making a inifix with board names...]] |
 #+END:
 
@@ -350,17 +351,80 @@ I would also like to get the line number for a point.
 =(line-number-at-pos 25928)= i.e
 So instead of reffering to name (if it dont exists) i can refer to a line number.
 
+To get the right board, to be able to change it, we first need to get
+our point to the right place. No worries, thats the easy part
+
+
+
+
+** TODO Adding match property                                     :something:
+
+When I press apply, i will first see which infix are selected.
+Each infix (e.g match, or mirror) are associated with a update function.
+ - mirror :: =kanban--update-mirror-property=
+ - match :: =kanban--update-match-property=
+
+ The problem is the =kanban--update-board-property= at this moment, its more
+ for mirror property,
+
+ The regexp need to be updated =(format ":%s\\s-+\\(?:t\\|nil\\)"= actually it should be an argument
+
+
+#+begin_src emacs-lisp
+  (let* ((board (car (last (kanban-find-boards))))
+         (prop-regex ":mirrored\\s-+\\(?:t\\|nil\\)")
+         )
+    (kanban--update-board-property board "match" "hello" prop-regex)
+
+    )
+#+end_src
+
+#+RESULTS:
+
+Instead of sending what to match , and value
+If we send in a  function. This way we can do what ever we want.
+
+ 1. We got to the char position.
+ 2. Check that we are at the begnning.
+ 3. Now we send the hole row except for =#+BEGIN: kanban=
+ 4. The function can now do what ever it likes and return the new parameter line
+
+
+
+
+#+begin_src emacs-lisp
+  (defun test-re-organize (params)
+    "docstring"
+    (format ":mirror t :match %s" "apa"))
+
+  (defun kanban--update-board-property2 (pos fn)
+    "Update PROPERTY with VALUE for board at POS."
+    (save-excursion
+      (goto-char pos)
+      (when (looking-at "#\\+BEGIN: kanban\\(.*\\)$")
+        (let* ((params (match-string 1))
+               (properties (funcall fn params))
+               )
+            (beginning-of-line)
+            (kill-line)
+            (insert "\n")
+            (previous-line)
+            (insert (format "#+BEGIN: kanban %s" properties ))))))
+
+
+
+  (kanban--update-board-property2 (car (last (kanban-find-boards))) #'test-re-organize)
+#+end_src
+
+#+RESULTS:
 
 
 
 ** TODO Making a inifix with board names...
 
 
-#+BEGIN: kanban :mirrored t
-| DONE                   | TODO                                |
-|------------------------+-------------------------------------|
-| [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]] |                                     |
-|                        | [[file:README.org::*add the heading to choices.][add the heading to choices.]]         |
-|                        | [[file:README.org::*org element at point][org element at point]]                |
-|                        | [[file:README.org::*Making a inifix with board names...][Making a inifix with board names...]] |
+#+BEGIN: kanban :mirror t :match apa
+| DONE | TODO                  |
+|------+-----------------------|
+|      | [[file:README.org::*Adding match property][Adding match property]] |
 #+END:
