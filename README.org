@@ -420,6 +420,25 @@ If we send in a  function. This way we can do what ever we want.
 
 
 
+
+** Property update
+#+begin_src emacs-lisp :lexical t
+  (defun kanban-replace-mirror (property new-val)
+    "Creates a closure with new-val that replaces the old"
+    (lambda (prop-arg)
+      (let* (
+             (regexp (format ":%s[ \t]+[^ ]+" property))
+             (new-prop (format ":%s %s" property new-val) ))
+        (replace-regexp-in-string regexp new-prop prop-arg)
+        )))
+
+
+  (let* ((fn (kanban-replace-mirror "match" "calle")))
+    (funcall fn "kanban :mirror t :match apa")
+    )
+
+#+end_src
+
 ** TODO Making a inifix with board names...
 
 
