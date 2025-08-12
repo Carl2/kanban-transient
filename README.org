@@ -439,6 +439,64 @@ If we send in a  function. This way we can do what ever we want.
 
 #+end_src
 
+Whats missing is a =suffix= that decides which /function/ and /board/ to update
+The function is decided which /infix/ are changed, or maybe all of them based on
+
+We can make a ALIST of the argument value and the property
+
+#+begin_src emacs-lisp :lexical t
+  (defconst kanban-property-switches
+  '(("mirror" . "--mirrored=")
+    ("match"   . "--match="))
+  "Alist mapping names to switches.")
+
+  (defun kanban-get-value-from-alist (key)
+    " Simple function to just get the value from a key"
+    (cdr (assoc key kanban-property-switches)))
+
+
+  (defun kanban-get-property-fn (property-name)
+    "docstring"
+    (let* ((switch (kanban-get-value-from-alist property-name))
+           (mirror-value (transient-arg-value switch (transient-args 'kanban-properties)))
+           (function (kanban-replace-property property-name mirror-value))
+      )
+      function
+    ))
+
+
+
+  (transient-define-suffix kanban--apply-properties()
+    "Apply the new property based on Infix and boards"
+    :description "Apply"
+    :key "A"                  ;; Key to trigger this suffix
+    (interactive )
+    (let* ((args (transient-args 'kanban-properties))
+           (mirror-value (transient-arg-value "--option=" args))
+           (mirror-fn (kanban-replace-mirror))
+           )
+      (message "Value %s" value)
+      ))
+
+#+end_src
+
+This works for the different match and mirror, all we need is to provide the property-name (match,mirror),
+But to update all we need to iterate through each if the Alist.
+
+#+begin_src emacs-lisp :lexical
+
+  (let* ((properties (mapcar #'car kanban-property-switches))
+         (fns (mapcar #'kanban-get-property-fn properties))
+         )
+    (cl-dolist (fn fns)
+      (funcall fn ":mirror t :match apa")
+      ))
+#+end_src
+
+#+RESULTS:
+
+**
+
 ** TODO Making a inifix with board names...
 
 

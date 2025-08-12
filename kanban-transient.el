@@ -376,10 +376,37 @@
           (previous-line)
           (insert (format "#+BEGIN: kanban%s %s" params new-prop)))))))
 
-;; (defun kanban--update-board-property (pos property value)
-;;   "update PROPERTY with VALUE for board at POS."
 
-;;   )
+
+
+;; Newer version of the update.
+(defun kanban--update-board-property2 (pos fn)
+  "Update PROPERTY with VALUE for board at POS."
+  (save-excursion
+    (goto-char pos)
+    (when (looking-at "#\\+BEGIN: kanban\\(.*\\)$")
+      (let* ((params (match-string 1))
+             (properties (funcall fn params))
+             )
+        (beginning-of-line)
+        (kill-line)
+        (insert "\n")
+        (previous-line)
+        (insert (format "#+BEGIN: kanban %s" properties ))))))
+
+;; This can be used to send in the lambda into
+;; kanban--update-board-propety2
+(defun kanban-replace-property (property new-val)
+    "Creates a closure with new-val that replaces the old"
+    (lambda (prop-arg)
+      (let* (
+             (regexp (format ":%s[ \t]+[^ ]+" property))
+             (new-prop (format ":%s %s" property new-val) ))
+        (replace-regexp-in-string regexp new-prop prop-arg)
+        )))
+
+;;
+
 
 (transient-define-infix kanban-mirror-option ()
   "Set mirrored property value."
