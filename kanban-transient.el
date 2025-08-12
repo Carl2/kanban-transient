@@ -33,6 +33,23 @@
 (defvar kanban--selected-boards nil
   "List of selected board positions for batch operations.")
 
+(defconst kanban-property-switches
+  '(("mirror" . "--mirrored=")
+    ("match"   . "--match="))
+  "Alist mapping names to switches.")
+
+(defun kanban-get-value-from-alist (key)
+  " Simple function to just get the value from a key"
+  (cdr (assoc key kanban-property-switches)))
+
+(defun kanban-get-property-fn (property-name)
+  "Returns the transform function for a property "
+  (let* ((switch (kanban-get-value-from-alist property-name))
+         (mirror-value (transient-arg-value switch (transient-args 'kanban-properties)))
+         (function (kanban-replace-property property-name mirror-value))
+         )
+    function
+    ))
 
 (transient-define-suffix kanban-update-boards()
   "Update all boards"
@@ -405,7 +422,6 @@
         (replace-regexp-in-string regexp new-prop prop-arg)
         )))
 
-;;
 
 
 (transient-define-infix kanban-mirror-option ()
