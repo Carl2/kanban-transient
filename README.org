@@ -423,7 +423,7 @@ If we send in a  function. This way we can do what ever we want.
 
 ** Property update
 #+begin_src emacs-lisp :lexical t
-  (defun kanban-replace-mirror (property new-val)
+  (defun kanban-replace-property (property new-val)
     "Creates a closure with new-val that replaces the old"
     (lambda (prop-arg)
       (let* (
@@ -483,14 +483,16 @@ We can make a ALIST of the argument value and the property
 This works for the different match and mirror, all we need is to provide the property-name (match,mirror),
 But to update all we need to iterate through each if the Alist.
 
+This want work since i need to return the fixed string.
 #+begin_src emacs-lisp :lexical
-
-  (let* ((properties (mapcar #'car kanban-property-switches))
-         (fns (mapcar #'kanban-get-property-fn properties))
+  (defun kanban-replace-property-header (property-header)
+    "docstring"
+    (let* ((properties (mapcar #'car kanban-property-switches))
+           (fns (mapcar #'kanban-get-property-fn properties))
          )
     (cl-dolist (fn fns)
       (funcall fn ":mirror t :match apa")
-      ))
+      )))
 #+end_src
 
 #+RESULTS:
