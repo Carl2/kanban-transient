@@ -495,13 +495,78 @@ But to update all we need to iterate through each if the Alist.
 
 #+RESULTS:
 
-**
+Allright, back in buisness.  So we have something that could update
+once we are at the selected board.
+
+[[file:kanban-transient.el::defun kanban-update-board-property (args][Kanban-update-board-property]]
+ 1. Get all the boards =kanban-find-boards=
+ 3. For each of the board
+    1. [ ] Get the function-list of all property update functions =kanban-get-property-fn= ,
+    2. [ ] Jump to the position for that board.
+    3. [ ] For each of the property fn
+       1. [ ] apply it.
+
+First I need to iterate (mapcar) through each of the =selected-boards=
+At the same time i need all the fns, for each.
+So I can create a new lambda function which /handles/ each board.
+Actually to make this better , we can jump to the position
+
+#+begin_src emacs-lisp :lexical t
+  (defun kanban-update-board-property (selected-list)
+    "docstring"
+    (let* ((prop-fns (kanban--get-property-fns)))
+      (mapcar (lambda (board-pos)
+                (kanban--update-position-with-fns pos prop-fns)
+                ) selected-list)
+      ))
+
+#+end_src
+
+The problem is that =prop-fns= is a list, we need to make it one =fn=
+
+#+begin_src emacs-lisp :lexical t
+  (defun kanban--update-position-with-fns (pos fns)
+    "For each of the fns update using kanban--update-board-property2"
+    (mapcar (lambda (fn)
+              (kanban--update-board-property2 pos fn)
+              ) fns))
+#+end_src
+
+Now we need to create a suffix.
+that takes care of the selected list.
+
+#+begin_src emacs-lisp :lexical t
+  (transient-define-suffix kanban-apply-property-update()
+    "Documentation string"
+    :description "Apply selected"
+    :key "P"                  ;; Key to trigger this suffix
+    (interactive )
+    (kanban-update-board-property kanban--selected-boards))
+
+
+#+end_src
+
+#+begin_example
+tl;dr
+
+- Problem: (transient-args 'kanban-properties) was returning defaults ("--mirrored=nil") because you were calling it outside the active transient session (or too late), so transient only had default values.
+- Fix: read transient arguments while the transient is active — e.g. call (transient-args 'kanban-properties) inside the suffix command, build the property functions there, and pass them down to the update code instead of calling transient-args deep inside.
+- edebug gotcha: edebug only breaks if you instrument the actual runtime function. For transient suffixes:
+  - Evaluate the suffix so the defun exists, then run M-x edebug-instrument-function RET <suffix-fn> RET (or use (debug-on-entry '...)).
+  - Then invoke the transient and press the suffix key; edebug will stop and you can inspect args.
+- Quick notes: messages show because the function ran; if edebug didn't stop you probably instrumented the wrong form or redefined the function after instrumenting.
+
+#+end_example
 
 ** TODO Making a inifix with board names...
 
 
-#+BEGIN: kanban :mirror t :match apa
-| DONE | TODO                  |
-|------+-----------------------|
-|      | [[file:README.org::*Adding match property][Adding match property]] |
+#+BEGIN: kanban :mirrored nil :math nil
+| TODO                                | DONE                   |
+|-------------------------------------+------------------------|
+|                                     | [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]] |
+| [[file:README.org::*add the heading to choices.][add the heading to choices.]]         |                        |
+| [[file:README.org::*org element at point][org element at point]]                |                        |
+| [[file:README.org::*Adding match property][Adding match property]]               |                        |
+| [[file:README.org::*Making a inifix with board names...][Making a inifix with board names...]] |                        |
 #+END:

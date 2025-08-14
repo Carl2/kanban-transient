@@ -310,6 +310,7 @@
   "Clear board selection."
   :description "Clear selection"
   :key "C"
+  :transient t
   (interactive)
   (setq kanban--selected-boards nil)
   (message "Cleared board selection"))
@@ -405,8 +406,84 @@
         (replace-regexp-in-string regexp new-prop prop-arg)
         )))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                          Apply the property update                         ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defconst kanban-property-switches
+  '(("mirror" . "--mirrored=")
+    ("match"   . "--match="))
+  "Alist mapping names to switches.")
 
+(defun kanban-get-value-from-alist (key)
+  " Simple function to just get the value from a key"
+  (cdr (assoc key kanban-property-switches)))
+
+;TODO: the transient arg does not seem to work properly?
+(defun kanban-get-property-fn (property-name)
+  "docstring"
+  (let* ((switch (kanban-get-value-from-alist property-name))
+         (mirror-value (transient-arg-value switch (transient-args 'kanban-properties)))
+         (function (kanban-replace-property property-name mirror-value))
+         )
+    function
+    ))
+
+(defun kanban--get-property-fns ()
+  "Return a list of property functions for each entry in `kanban-property-switches'.
+Each element is the result of calling `kanban-get-property-fn' with the
+property name (the car of each element of `kanban-property-switches')."
+  (mapcar (lambda (entry)
+            (kanban-get-property-fn (car entry)))
+          kanban-property-switches))
+
+(defun kanban--update-position-with-fns (pos property-update-fns)
+  "Apply each function in PROPERTY-UPDATE-FNS to the board position POS.
+
+POS is a board position (in the form expected by
+`kanban--update-board-property2').
+
+PROPERTY-UPDATE-FNS is a list of functions (or function descriptors)
+that `kanban--update-board-property2' understands. For each function
+FN in PROPERTY-UPDATE-FNS this function calls:
+
+  (kanban--update-board-property2 POS FN)
+
+and collects the results.
+
+Returns a list of the results from each call, in the same order as
+PROPERTY-UPDATE-FNS. Any errors raised by the update functions are
+propagated to the caller."
+  (mapcar (lambda (fn)
+            (kanban--update-board-property2 pos fn))
+          property-update-fns))
+
+
+(defun kanban-update-board-property (selected-list)
+  "Update board properties for each position in SELECTED-LIST.
+
+SELECTED-LIST is a list of board position objects. For each position
+in the list this function fetches the current property functions via
+`kanban--get-property-fns` and applies them by calling
+`kanban--update-position-with-fns` with the position and those
+functions. This function performs side effects (it updates the
+positions) and returns a list of the values returned by
+`kanban--update-position-with-fns` for each position."
+  (let* ((prop-fns (kanban--get-property-fns)))
+    (mapcar (lambda (board-pos)
+              (kanban--update-position-with-fns board-pos prop-fns))
+            selected-list)))
+
+
+(transient-define-suffix kanban-apply-property-update()
+  "Documentation string"
+  :description "Apply selected"
+  :key "P"                  ;; Key to trigger this suffix
+  (interactive )
+  (let* ((args (transient-args 'kanban-properties)))
+    (message "WTF %s" args)
+    (kanban-update-board-property kanban--selected-boards)
+    )
+  )
 
 (transient-define-infix kanban-mirror-option ()
   "Set mirrored property value."
@@ -445,6 +522,7 @@
    ["Actions"
     :class transient-row
     (kanban-apply-mirror)
+    (kanban-apply-property-update)
     ("u" "Update boards" kanban-update-boards)
     ("q" "Back" transient-quit-one)]])
 
