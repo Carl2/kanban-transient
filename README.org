@@ -255,7 +255,7 @@ Now this should be implemented in =kanban-find-boards=
 
 
 #+NAME: TEST
-#+BEGIN: kanban :mirrored nil
+#+BEGIN: kanban :mirrored t :match calle :mirror nil
 | DONE                   | TODO                                |
 |------------------------+-------------------------------------|
 | [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]] |                                     |
@@ -560,10 +560,13 @@ tl;dr
 
 #+end_example
 
+*** replace property
+There is something strange with this.
+
 ** TODO Making a inifix with board names...
 
 
-#+BEGIN: kanban :mirrored nil :math nil
+#+BEGIN: kanban :mirror t :match: "apa"
 | TODO                                | DONE                   |
 |-------------------------------------+------------------------|
 |                                     | [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]] |
