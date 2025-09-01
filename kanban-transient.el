@@ -23,7 +23,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
+(require 'cl-lib)
 ;;; Commentary:
 
 ;; commentary
@@ -34,13 +34,14 @@
   "List of selected board positions for batch operations.")
 
 (defconst kanban-property-switches
-  '(("mirror" . "--mirrored=")
-    ("match"   . "--match="))
+  '(("mirror" . ("--mirrored=" . nil))
+    ("match"   . ("--match=" . t)))
   "Alist mapping names to switches.")
 
 (defun kanban-get-value-from-alist (key)
   " Simple function to just get the value from a key"
-  (cdr (assoc key kanban-property-switches)))
+  (car (cdr (assoc key kanban-property-switches))))
+;;(cdr (assoc key kanban-property-switches)))
 
 
 (transient-define-suffix kanban-update-boards()
@@ -77,7 +78,7 @@
 
 
 (transient-define-suffix kanban-init-exec()
-  "initilize the kanban board"
+  "initialize the kanban board"
   :key "i"
   :description "Initialize board"
   (interactive)
@@ -420,7 +421,7 @@
 ;;         )
 ;;       ))
 
-(defun kanban-replace-property (property new-val)
+(defun kanban-replace-property-fn (property new-val)
   "Return a closure that replaces :PROPERTY with NEW-VAL in a plist-like string."
   (let* ((key (intern (concat ":" property)))
          (val (if (stringp new-val) (intern new-val) new-val)))
@@ -432,21 +433,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                          Apply the property update                         ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defconst kanban-property-switches
-  '(("mirror" . "--mirrored=")
-    ("match"   . "--match="))
-  "Alist mapping names to switches.")
 
-(defun kanban-get-value-from-alist (key)
-  " Simple function to just get the value from a key"
-  (cdr (assoc key kanban-property-switches)))
+
+
 
 ;TODO: the transient arg does not seem to work properly?
 (defun kanban-get-property-fn (property-name args)
   "docstring"
   (let* ((switch (kanban-get-value-from-alist property-name))
          (mirror-value (transient-arg-value switch args))
-         (function (kanban-replace-property property-name mirror-value))
+         (function (kanban-replace-property-fn property-name mirror-value))
          )
     (message "→→→→ %s %s" property-name mirror-value )
     function
