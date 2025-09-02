@@ -43,6 +43,11 @@
   (car (cdr (assoc key kanban-property-switches))))
 ;;(cdr (assoc key kanban-property-switches)))
 
+(defun kanban-is-property-quoted (key)
+  "Returns t if the property should be quoted"
+  (cdr (cdr (assoc key kanban-property-switches)))
+  )
+
 
 (transient-define-suffix kanban-update-boards()
   "Update all boards"
@@ -429,22 +434,29 @@
       (let* ((plist (car (read-from-string (concat "(" prop-arg ")"))))
              (updated (plist-put plist key val)))
         ;; Return without outer parens, e.g. \":mirror t :match nisse\"
+        ;TODO: Fix this,
         (substring (prin1-to-string updated) 1 -1)))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                          Apply the property update                         ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
+(defun kanban--quote-str (str do-quote)
+  "Quote string if do-qoute is t."
+  (if do-quote
+      (concat "\"" str "\"")
+    str))
 
 
 ;TODO: the transient arg does not seem to work properly?
 (defun kanban-get-property-fn (property-name args)
   "docstring"
   (let* ((switch (kanban-get-value-from-alist property-name))
-         (mirror-value (transient-arg-value switch args))
-         (function (kanban-replace-property-fn property-name mirror-value))
+         (prop-value (transient-arg-value switch args))
+         (quoted (kanban-is-property-quoted property-name))
+         (function (kanban-replace-property-fn property-name
+                                               (kanban--quote-str prop-value quoted)))
          )
-    (message "→→→→ %s %s" property-name mirror-value )
+    (message "→→→→ %s %s" property-name quoted )
     function
     ))
 
