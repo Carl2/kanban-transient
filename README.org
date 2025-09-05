@@ -357,7 +357,8 @@ our point to the right place. No worries, thats the easy part
 
 
 
-** TODO Adding match property                                     :something:
+** DONE Adding match property                                     :something:
+CLOSED: [2025-09-05 fre 10:36]
 
 When I press apply, i will first see which infix are selected.
 Each infix (e.g match, or mirror) are associated with a update function.
@@ -421,7 +422,8 @@ If we send in a  function. This way we can do what ever we want.
 
 
 
-** Property update
+** DONE Property update
+CLOSED: [2025-09-05 fre 10:35]
 #+begin_src emacs-lisp :lexical t
   (defun kanban-replace-property (property new-val)
     "Creates a closure with new-val that replaces the old"
@@ -561,17 +563,102 @@ tl;dr
 #+end_example
 
 *** replace property
+
 There is something strange with this.
+
+*** TODO No match
+If the match is not set, it should't add "nil"
+Actually it shouldnt create a transform function at all.
+
+
+
+** TODO Make sure
 
 ** TODO Making a inifix with board names...
 
 
-#+BEGIN: kanban :mirror t :match: "apa"
+#+BEGIN: kanban :mirrored nil :match nil
 | TODO                                | DONE                   |
 |-------------------------------------+------------------------|
 |                                     | [[file:README.org::*Jump to board (suffix)][Jump to board (suffix)]] |
 | [[file:README.org::*add the heading to choices.][add the heading to choices.]]         |                        |
 | [[file:README.org::*org element at point][org element at point]]                |                        |
-| [[file:README.org::*Adding match property][Adding match property]]               |                        |
+|                                     | [[file:README.org::*Adding match property][Adding match property]]  |
+|                                     | [[file:README.org::*Property update][Property update]]        |
+| [[file:README.org::*No match][No match]]                            |                        |
+| [[file:README.org::*Make sure][Make sure]]                           |                        |
 | [[file:README.org::*Making a inifix with board names...][Making a inifix with board names...]] |                        |
 #+END:
+
+Bug fixing.
+The first part is that we are sending =mirror= that is wrong it should be =:mirrored=
+In [[file:kanban-transient.el::defun kanban-get-property-fn (property-name args][kanban-get-property-fn]] we use the =property-name= what we need to do is to get /switch/.
+Though this is though, we need to remove the ~--.*=~
+And make it a :mirrored
+
+
+
+
+#+begin_src emacs-lisp
+  (defun plist-to-string (plist)
+    "Transform a plist into a string"
+    (interactive "P")
+    )
+
+
+  (let* ((plist-str (concat ":mirror nil :match \"calle\""))
+         (key (intern (concat ":" "match")))
+         (val (intern "bajs"))
+
+         (plist (car (read-from-string (concat "(" plist-str ")" ))))
+         (updated (plist-put plist :match 'fisk))
+         )
+    (with-temp-buffer
+      (prin1 plist (current-buffer))
+      (buffer-string)
+      )
+
+    )
+
+  ;; Maybe im doing this the wrong way.
+  ;; Maybe evrything should be items, and then post-process the bloody thing.
+
+
+
+#+end_src
+
+#+RESULTS:
+: (:mirror nil :match fisk)
+
+** Emacs-lisp
+
+If i have a plist for example =(:mirrored nil :match calle)=
+and i need to print it out. I can use =prin1-to-string=.
+then it becomes
+
+#+begin_src emacs-lisp
+  (let* ((plist '(:mirrored nil :match calle))
+         )
+    (substring (prin1-to-string plist) 1 -1)
+    )
+
+#+end_src
+
+
+ ":mirrored nil :match calle"
+
+The problem occurs that some of the values needs to be quouted. For example
+in this case =:match "calle"= so the return string will be
+
+#+begin_src emacs-lisp
+  (let* ((plist '(:mirrored nil :match "calle"))
+         (out (substring (prin1-to-string plist) 1 -1))
+         )
+    (insert "Out: %s" out)
+    )
+
+#+end_src
+
+#+RESULTS:
+
+":mirrored nil :match \"calle\""

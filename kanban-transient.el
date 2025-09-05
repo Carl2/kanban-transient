@@ -478,6 +478,7 @@ positions) and returns a list of the values returned by
   :class 'transient-option
   :key "-p"
   :argument "--mirrored="
+  :always-read t
   :choices '("t" "nil")
   :init-value (lambda (obj) (oset obj value "nil")))
 
