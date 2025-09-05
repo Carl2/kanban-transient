@@ -370,32 +370,6 @@
                            board-infos ", ")))
     (message "No boards selected")))
 
-(defun kanban--update-board-property (pos property value prop-regex)
-  "Update PROPERTY with VALUE for board at POS."
-  (save-excursion
-    (goto-char pos)
-    (when (looking-at "#\\+BEGIN: kanban\\(.*\\)$")
-      (let* ((params (match-string 1))
-             (new-prop (format ":%s %s" property value)))
-        (if (string-match prop-regex params)
-            ;; Replace existing property
-            (let ((new-params (replace-match new-prop nil nil params)))
-              (beginning-of-line)
-              (kill-line)
-              (insert "\n")
-              (previous-line)
-              (insert (format "#+BEGIN: kanban%s" new-params)))
-          ;; Add new property
-          (beginning-of-line)
-          (kill-line)
-          (insert "\n")
-          (previous-line)
-          (insert (format "#+BEGIN: kanban%s %s" params new-prop)))))))
-
-
-
-
-;; Newer version of the update.
 (defun kanban--update-board-property2 (pos fn)
   "Update PROPERTY with VALUE for board at POS."
   (save-excursion
@@ -411,53 +385,34 @@
         (previous-line)
         (insert (format "#+BEGIN: kanban %s" properties ))))))
 
-;; This can be used to send in the lambda into
-;; kanban--update-board-propety2
-;; (defun kanban-replace-property (property new-val)
-;;     "Creates a closure with new-val that replaces the old"
-;;     (lambda (prop-arg)
-;;       (let* (
-;;              (regexp (format ":%s[ \t]+[^ ]+" property))
-;;              (new-prop (format ":%s %s" property new-val) )
-;;              (new-str (replace-regexp-in-string regexp  new-prop prop-arg))
-;;              )
-;;         (message "Replacing %s → %s  🪓 %s" prop-arg new-prop new-str )
-;;         new-str
-;;         )
-;;       ))
-
-(defun kanban-replace-property-fn (property new-val)
+(defun kanban-replace-property-fn (name property  new-val)
   "Return a closure that replaces :PROPERTY with NEW-VAL in a plist-like string."
-  (let* ((key (intern (concat ":" property)))
-         (val (if (stringp new-val) (intern new-val) new-val)))
+  (let* ((key property)
+         (is-quoted (kanban-is-property-quoted name))
+         ;TODO: Here we check if its quoted, and either leave it as a string
+         ;or make intern.
+         (val (if is-quoted
+                  new-val
+                (intern new-val)
+                  )))
     (lambda (prop-arg)
       (let* ((plist (car (read-from-string (concat "(" prop-arg ")"))))
              (updated (plist-put plist key val)))
-        ;; Return without outer parens, e.g. \":mirror t :match nisse\"
-        ;TODO: Fix this,
         (substring (prin1-to-string updated) 1 -1)))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                          Apply the property update                         ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun kanban--quote-str (str do-quote)
-  "Quote string if do-qoute is t."
-  (if do-quote
-      (concat "\"" str "\"")
-    str))
-
-
-;TODO: the transient arg does not seem to work properly?
 (defun kanban-get-property-fn (property-name args)
-  "docstring"
-  (let* ((switch (kanban-get-value-from-alist property-name))
-         (prop-value (transient-arg-value switch args))
-         (quoted (kanban-is-property-quoted property-name))
-         (function (kanban-replace-property-fn property-name
-                                               (kanban--quote-str prop-value quoted)))
+  " Create function for updating property fields.
+switch transforms --mirrored → :mirrored which is a canonical name.
+"
+  (let* ((prop-name (kanban-get-value-from-alist property-name))
+         (switch (intern (concat ":" (substring prop-name 2 -1))))
+         (prop-value (transient-arg-value prop-name args))
          )
-    (message "→→→→ %s %s" property-name quoted )
-    function
+    (message "→→→→ %s → %s" prop-name prop-value)
+    (kanban-replace-property-fn property-name switch prop-value)
     ))
 
 (defun kanban--get-property-fns (args)
@@ -486,7 +441,6 @@ Returns a list of the results from each call, in the same order as
 PROPERTY-UPDATE-FNS. Any errors raised by the update functions are
 propagated to the caller."
   (mapcar (lambda (fn)
-            (message "Funcall %s" (funcall fn ":mirrored nil :match nil"))
             (kanban--update-board-property2 pos fn))
           property-update-fns))
 
