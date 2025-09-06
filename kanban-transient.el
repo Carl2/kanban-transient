@@ -333,28 +333,28 @@
   (message "Cleared board selection"))
 
 
-(transient-define-suffix kanban-apply-mirror ()
-  "Apply mirrored setting to selected boards."
-  :description "Apply mirrored"
-  :key "a"
-  (interactive)
-  (let* ((args (transient-args 'kanban-properties))
-         (mirrored-value (transient-arg-value "--mirrored=" args))
-         (prop-regex ":mirrored\\s-+\\(?:t\\|nil\\)")
-         (boards (or kanban--selected-boards
-                    (when (y-or-n-p "No boards selected. Apply to current board?")
-                      (list (save-excursion
-                             (unless (looking-at "#\\+BEGIN: kanban")
-                               (re-search-backward "#\\+BEGIN: kanban" nil t))
-                             (point)))))))
-    (if boards
-        (progn
-          (dolist (pos boards)
-            (kanban--update-board-property pos "mirrored" (or mirrored-value "nil") prop-regex))
-          (message "Updated mirrored property for %d board(s)" (length boards))
-          ;; Update the boards after changing properties
-          (kanban-exec-fn-all-blocks #'org-dblock-update))
-      (message "No boards to update"))))
+;; (transient-define-suffix kanban-apply-mirror ()
+;;   "Apply mirrored setting to selected boards."
+;;   :description "Apply mirrored"
+;;   :key "a"
+;;   (interactive)
+;;   (let* ((args (transient-args 'kanban-properties))
+;;          (mirrored-value (transient-arg-value "--mirrored=" args))
+;;          (prop-regex ":mirrored\\s-+\\(?:t\\|nil\\)")
+;;          (boards (or kanban--selected-boards
+;;                     (when (y-or-n-p "No boards selected. Apply to current board?")
+;;                       (list (save-excursion
+;;                              (unless (looking-at "#\\+BEGIN: kanban")
+;;                                (re-search-backward "#\\+BEGIN: kanban" nil t))
+;;                              (point)))))))
+;;     (if boards
+;;         (progn
+;;           (dolist (pos boards)
+;;             (kanban--update-board-property pos "mirrored" (or mirrored-value "nil") prop-regex))
+;;           (message "Updated mirrored property for %d board(s)" (length boards))
+;;           ;; Update the boards after changing properties
+;;           (kanban-exec-fn-all-blocks #'org-dblock-update))
+;;       (message "No boards to update"))))
 
 
 
@@ -528,7 +528,6 @@ positions) and returns a list of the values returned by
     (kanban-match-option)]
    ["Actions"
     :class transient-row
-    (kanban-apply-mirror)
     (kanban-apply-property-update)
     ("u" "Update boards" kanban-update-boards)
     ("q" "Back" transient-quit-one)]])
