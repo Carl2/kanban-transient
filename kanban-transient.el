@@ -95,7 +95,7 @@
 
     (pcase where
       ("here" (org-kanban/initialize-here))
-      ((or "beg" "beginning") (kanban/initialize-at-first-heading))
+      ((or "beg" "beginning") (org-kanban/initialize-at-first-heading))
       ((or "end" "end") (org-kanban/initialize-at-end))
       (_ (message "Unknown place: %s" where)))))
 
