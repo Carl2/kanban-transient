@@ -36,7 +36,7 @@
 (defconst kanban-property-switches
   '(("mirror" . ("--mirrored=" . nil))
     ("match"   . ("--match=" . t)))
-  "Alist mapping names to switches.")
+  "Alist mapping names to switches and if the switches should be quoted.")
 
 (defun kanban-get-value-from-alist (key)
   " Simple function to just get the value from a key"
@@ -385,12 +385,10 @@
         (previous-line)
         (insert (format "#+BEGIN: kanban %s" properties ))))))
 
-(defun kanban-replace-property-fn (name property  new-val)
+(defun kanban-replace-property-fn (name property new-val)
   "Return a closure that replaces :PROPERTY with NEW-VAL in a plist-like string."
   (let* ((key property)
          (is-quoted (kanban-is-property-quoted name))
-         ;TODO: Here we check if its quoted, and either leave it as a string
-         ;or make intern.
          (val (if is-quoted
                   new-val
                 (intern new-val)
@@ -399,6 +397,17 @@
       (let* ((plist (car (read-from-string (concat "(" prop-arg ")"))))
              (updated (plist-put plist key val)))
         (substring (prin1-to-string updated) 1 -1)))))
+
+(defun kanban-replace-empty-property-fn (property-name)
+  "What if the property has been removed?
+
+There are two scenarios, either we remove the old property.
+Or we keep it, and let the user remove it. Or we will remove what ever is not there?
+But then again, it needs to be added everytime..I will make it the easy for my self.
+I will just return the old .
+"
+  (lambda (prop-arg) prop-arg) ;; this is just a dummy function returning same thing , if the arg
+  )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                          Apply the property update                         ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -411,8 +420,15 @@ switch transforms --mirrored → :mirrored which is a canonical name.
          (switch (intern (concat ":" (substring prop-name 2 -1))))
          (prop-value (transient-arg-value prop-name args))
          )
-    (message "→→→→ %s → %s" prop-name prop-value)
-    (kanban-replace-property-fn property-name switch prop-value)
+    (if prop-value
+        (progn
+        (message "→→→→ %s → %s" prop-name prop-value)
+        (kanban-replace-property-fn property-name switch prop-value))
+      (progn
+        (message "🪓 %s → %s" prop-name prop-value)
+        (kanban-replace-empty-property-fn prop-name)
+        )
+        )
     ))
 
 (defun kanban--get-property-fns (args)
@@ -420,7 +436,8 @@ switch transforms --mirrored → :mirrored which is a canonical name.
 Each element is the result of calling `kanban-get-property-fn' with the
 property name (the car of each element of `kanban-property-switches')."
   (mapcar (lambda (entry)
-            (kanban-get-property-fn (car entry) args))
+            (kanban-get-property-fn (car entry) args)
+            )
           kanban-property-switches))
 
 (defun kanban--update-position-with-fns (pos property-update-fns)
