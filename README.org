@@ -1,3 +1,37 @@
+* Kanban-prefix.
+
+This is just a small project to keep going.
+
+I like the idea with /kanban/ boards, and especially since its
+integrated into org-mode. I tried showing to my friends at work; not
+so impressed 😇 Though to my defence or maybe to their defence , they
+like nice GUI things, and to be fair, that might be little out of
+scope here.
+
+So what is this? its a /transient/-menu for [[https://github.com/gizmomogwai/org-kanban][org-kanban]], basically
+standing on the shoulder of giants, i made a small menu to be able to
+fix with kanban boards in org mode.  Actually this could be equally
+done with =org-kanban/configure-block=, but I learned something, and
+that was the purpose.
+
+Is my code messy? Maybe, but i like working in somekind of
+functional-programming tendency. So this was my way of dealing with
+it. My take on it is that we shouldn't be afraid of using functions as
+variables. But I agree, sometimes i go to far just to prove to my
+self, and again the purpose was to learn more about /emacs-lisp/
+programming with focus on making a transient menu.  As of that, I
+think I learned alot, and in retrospective I think I achieved what I wanted.
+I wrote quite abit about [[https://cocode.se/emacs/transient_cont.html][transient]] on a blog post.
+
+The rest of this document, is just notes taken during this task.
+No need to read it...
+
+Now to the question, is it useful? No idea. Use it change it do what
+ever you want. Just provide me with what and how, so I can learn 👿
+
+Have fun!
+
+
 * Updating parameters
 
 
@@ -26,7 +60,6 @@ Then use =plist-get= to fetch the values by their keys as shown above.
 So the parameters are all the content including the parameters are there.
 
 
-* Check out
 
 * Feature configure
 :PROPERTIES:
