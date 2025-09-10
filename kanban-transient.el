@@ -58,8 +58,8 @@
     ;; (let* ((args (transient-args 'kanban-prefix))
     ;;        (value (transient-arg-value "--option=" args))
     ;;        )
-      (kanban-exec-fn-all-blocks #'org-dblock-update)
-      ))
+    (kanban-exec-fn-all-blocks #'org-dblock-update)
+    ))
 
 
 (transient-define-infix kanban-initialize-options()
@@ -137,11 +137,11 @@
            (name (or dblock-name "kanban"))
            (store-fn (store-points-fn my-list))
            (start (or pt (point-min)))
-         )
-    (progn
-      (kanban-exec-fn-all-blocks store-fn start)
-      (cdr my-list)
-    ))))
+           )
+      (progn
+        (kanban-exec-fn-all-blocks store-fn start)
+        (cdr my-list)
+        ))))
 
 
 (defun kanban-jump-to-position ()
@@ -274,8 +274,8 @@
       (let* ((params-str (match-string 1))
              (line (line-number-at-pos))
              (mirrored (if (string-match ":mirrored\\s-+\\(t\\|nil\\)" params-str)
-                          (match-string 1 params-str)
-                        "nil")))
+                           (match-string 1 params-str)
+                         "nil")))
         (list :pos pos
               :line line
               :params params-str
@@ -290,14 +290,14 @@
   (interactive)
   (let* ((all-boards (mapcar #'kanban--get-board-info (kanban-find-boards)))
          (candidates (mapcar (lambda (board)
-                              (let* ((pos (plist-get board :pos))
-                                     (checked (member pos kanban--selected-boards)))
-                                (cons (kanban--format-board-candidate board checked)
-                                      pos)))
-                            all-boards))
+                               (let* ((pos (plist-get board :pos))
+                                      (checked (member pos kanban--selected-boards)))
+                                 (cons (kanban--format-board-candidate board checked)
+                                       pos)))
+                             all-boards))
          (choice (completing-read "Toggle board (TAB to complete): "
-                                 (mapcar #'car candidates)
-                                 nil t))
+                                  (mapcar #'car candidates)
+                                  nil t))
          (pos (cdr (assoc choice candidates))))
     (if (member pos kanban--selected-boards)
         (setq kanban--selected-boards (delete pos kanban--selected-boards))
@@ -340,11 +340,11 @@
          (mirrored-value (transient-arg-value "--mirrored=" args))
          (prop-regex ":mirrored\\s-+\\(?:t\\|nil\\)")
          (boards (or kanban--selected-boards
-                    (when (y-or-n-p "No boards selected. Apply to current board?")
-                      (list (save-excursion
-                             (unless (looking-at "#\\+BEGIN: kanban")
-                               (re-search-backward "#\\+BEGIN: kanban" nil t))
-                             (point)))))))
+                     (when (y-or-n-p "No boards selected. Apply to current board?")
+                       (list (save-excursion
+                               (unless (looking-at "#\\+BEGIN: kanban")
+                                 (re-search-backward "#\\+BEGIN: kanban" nil t))
+                               (point)))))))
     (if boards
         (progn
           (dolist (pos boards)
@@ -366,8 +366,8 @@
       (let ((board-infos (mapcar #'kanban--get-board-info kanban--selected-boards)))
         (message "Selected boards: %s"
                  (mapconcat (lambda (b)
-                             (format "Line %d" (plist-get b :line)))
-                           board-infos ", ")))
+                              (format "Line %d" (plist-get b :line)))
+                            board-infos ", ")))
     (message "No boards selected")))
 
 (defun kanban--update-board-property2 (pos fn)
@@ -392,7 +392,7 @@
          (val (if is-quoted
                   new-val
                 (intern new-val)
-                  )))
+                )))
     (lambda (prop-arg)
       (let* ((plist (car (read-from-string (concat "(" prop-arg ")"))))
              (updated (plist-put plist key val)))
@@ -422,13 +422,13 @@ switch transforms --mirrored → :mirrored which is a canonical name.
          )
     (if prop-value
         (progn
-        (message "→→→→ %s → %s" prop-name prop-value)
-        (kanban-replace-property-fn property-name switch prop-value))
+          (message "→→→→ %s → %s" prop-name prop-value)
+          (kanban-replace-property-fn property-name switch prop-value))
       (progn
         (message "🪓 %s → %s" prop-name prop-value)
         (kanban-replace-empty-property-fn prop-name)
         )
-        )
+      )
     ))
 
 (defun kanban--get-property-fns (args)
